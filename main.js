@@ -1,3 +1,19 @@
+/**
+<div id="content">
+    GitHub Name: <input id="gitname">
+    <button id="btn">Get Playlist</button>
+    <br/><br/>
+    Current Playlist: <select id="chooser">
+        <option>Select A Playist</option>
+    </select>
+    <br/>
+    <div id="playlistHolder">
+        <select id="playlist">
+            <option>Choose Song</option>
+        </select>
+    </div>
+</div>
+*/
 //---data--
 function id(string){return document.getElementById(string);}
 var propNames = Object.keys;
@@ -12,7 +28,11 @@ var lists = {};
 var namesArray = [];
 var songsArray = [];
 var currentPlayListName = "";
+var currentUrl = "";
+
 //---event handlers----
+//temporary test of songs:
+playlist.onchange = playSong;
 
 window.onload = initialize;
 btn.onclick = getNewList;
@@ -26,7 +46,7 @@ gitname.onclick = function(){this.value="";};
 
 //-----functions-------
 function initialize(){
-    // 1. Augment lists object with downloaded lists
+    // 1. Augment our lists object with downloaded lists
     addListsFromServer();
     // 2. Fill our chooser with lists' names
     //addPlaylistNamesToBox();//called from within 1. above    
@@ -113,8 +133,9 @@ function addNameToBox(newGitName){
 }
 
 function changePlayList(e){
-    
+
     var list = chooser.options[chooser.selectedIndex].innerHTML;
+    currentUrl = "https://" + list + ".github.io"+ "/music/";
     currentPlayListName = list;
     songsArray = propNames(lists[list]);
     
@@ -134,3 +155,10 @@ function sendListToServer(object){
     var objectString = JSON.stringify(object);
 }
 
+function playSong(){
+    var i = playlist.selectedIndex;
+    i--;
+    var url = currentUrl+songsArray[i]+".mp3";
+    alert(url);
+    document.location.assign(url);
+}
