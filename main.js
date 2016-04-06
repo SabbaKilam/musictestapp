@@ -156,9 +156,7 @@ function sendListToServer(object){
 }
 
 function playSong(){
-    var i = playlist.selectedIndex;
-    i--;
+    var i = --playlist.selectedIndex;
     var url = currentUrl+songsArray[i]+".mp3";
-    alert(url);
-    document.location.assign(url);
+    window.open(url);
 }
