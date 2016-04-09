@@ -1,0 +1,4 @@
+[08-Apr-2016 16:26:22 UTC] PHP Warning:  file_put_contents() expects parameter 1 to be a valid path, resource given in /home/ubuntu/workspace/phpfiles/getPlaylists.php on line 10
+[08-Apr-2016 16:26:22 UTC] PHP Stack trace:
+[08-Apr-2016 16:26:22 UTC] PHP   1. {main}() /home/ubuntu/workspace/phpfiles/getPlaylists.php:0
+[08-Apr-2016 16:26:22 UTC] PHP   2. file_put_contents() /home/ubuntu/workspace/phpfiles/getPlaylists.php:10

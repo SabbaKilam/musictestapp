@@ -14,37 +14,36 @@
     </div>
 </div>
 */
-//---data--
+//====| Global Objects and Data |====
+
 function id(string){return document.getElementById(string);}
-var propNames = Object.keys;
+var content = id("content");
 var gitname =id("gitname");
 var btn = id("btn");
 var chooser = id("chooser");
-var playlistHolder = id("playlistHolder");
 var playlist = id("playlist");
+var audioPlayer = id("audioPlayer");
+var propNames = Object.keys;
 
+var playlistHeader = "Choose a Song";
 var ajax = new XMLHttpRequest();
 var lists = {};
 var namesArray = [];
 var songsArray = [];
-var currentPlayListName = "";
 var currentUrl = "";
+var currentPlayListName ="";
 
-//---event handlers----
-//temporary test of songs:
-playlist.onchange = playSong;
+//====| The Driver's Seat |====
 
 window.onload = initialize;
+playlist.onchange = playSong;
 btn.onclick = getNewList;
-chooser.onchange = changePlayList;
-gitname.onkeyup = function(e){
-    if(e.keyCode === 13){
-        getNewList();
-    }
-};
+gitname.onkeyup = getNewList;
 gitname.onclick = function(){this.value="";};
+chooser.onchange = changePlayList;
 
-//-----functions-------
+//====| Under The Hood |====
+
 function initialize(){
     // 1. Augment our lists object with downloaded lists
     addListsFromServer();
@@ -54,6 +53,8 @@ function initialize(){
     addListsFromBrowser();
     // 4. Store lists object on the browser
     storeListsToBrowser();
+    
+    configureResizing();
     
 }//===| END of initialize() |=====
 
@@ -76,6 +77,28 @@ var addListsFromServer = ()=>{
     };
 };
 var storeListsToBrowser = ()=>{};
+function configureResizing(){
+    resizeAndCenter();
+    window.onresize = resizeAndCenter;
+    //----helpers-----
+    function resizeRootEm(){
+        document.documentElement.style.fontSize = (1.2*window.innerWidth/100 + 10) + "px";
+    }
+    function centerPlayer(){
+        var dimensions = id("content").getBoundingClientRect();
+        var top = (1/2)*(window.innerHeight - dimensions.height).toFixed(2) + "px";
+        var left = (1/2)*(window.innerWidth - dimensions.width).toFixed(2) + "px";
+        content.style.top = top;
+        content.style.left = left;
+        //gitname.value = `Top: ${top}; Left: ${left}`;
+        
+    }
+    function resizeAndCenter(){
+        resizeRootEm();
+        centerPlayer();
+    }
+    //-------------
+}
 var addPlaylistNamesToBox = ()=>{
     for(var userName in lists){
         addNameToBox(userName);
@@ -86,7 +109,10 @@ var addPlaylistNamesToBox = ()=>{
     }
 };
 
-function getNewList(){
+function getNewList(e){
+    var enterKey = 13;
+    if(e.keyCode && e.keyCode !== enterKey){return;}
+    
     //point to url
     var url = "https://" + gitname.value + ".github.io/music/list.json";
     ajax.open("GET", url);
@@ -109,7 +135,6 @@ function saveNewList(){
         lists[newname] = JSON.parse(ajax.response);
         addNameToBox(newname);
         sendListToServer(lists);
-
     }
     storeListsToBrowser(lists);
 }
@@ -120,7 +145,6 @@ function addNameToBox(newGitName){
     namesArray = [];
     opsArray.forEach(function(m){
         namesArray.push(m.innerHTML);
-
     });
     //add newGitName only if not aready there
     if(namesArray.indexOf(newGitName) === -1){
@@ -128,12 +152,19 @@ function addNameToBox(newGitName){
         op.innerHTML = newGitName;
         chooser.appendChild(op);
         gitname.value = "";
-        gitname.placeholder = newGitName;
+        gitname.placeholder = newGitName + " playlist saved";
     }
 }
 
 function changePlayList(e){
-
+    if(chooser.selectedIndex === 0){
+        playlist.innerHTML = "";
+        var topOption = document.createElement("option")
+        topOption.innerHTML = playlistHeader;
+        playlist.appendChild(topOption);
+        playlist.selectedIndex = 0;
+        return;
+    }
     var list = chooser.options[chooser.selectedIndex].innerHTML;
     currentUrl = "https://" + list + ".github.io"+ "/music/";
     currentPlayListName = list;
@@ -141,7 +172,7 @@ function changePlayList(e){
     
     playlist.innerHTML = "";
     var header = document.createElement("option");
-    header.innerHTML = "Choose a Song";
+    header.innerHTML = playlistHeader;
     playlist.appendChild(header);
     songsArray.forEach(function(m){
         var artistTitle =lists[list][m].artist + " - " +  lists[list][m].title;
@@ -151,12 +182,27 @@ function changePlayList(e){
     });
 }
 
-function sendListToServer(object){
-    var objectString = JSON.stringify(object);
+function playSong(){
+    var i = playlist.selectedIndex;
+    i-=1;
+    if(i >= 0){
+        var url = currentUrl+songsArray[i]+".mp3";
+        audioPlayer.src = url;
+    }
 }
 
-function playSong(){
-    var i = --playlist.selectedIndex;
-    var url = currentUrl+songsArray[i]+".mp3";
-    window.open(url);
+//----------
+function sendListToServer(listObject){
+    var listString = JSON.stringify(listObject);
+    var listSender = new XMLHttpRequest();
+    var form = new FormData();
+    listSender.open("POST", "phpfiles/getPlaylists.php");
+    form.append("lists", listString);
+    listSender.send(form);
+    //----------------------
+    listSender.onload = function(){
+        if(listSender.status !== 200){
+            alert(listSender.response);
+        }
+    };
 }

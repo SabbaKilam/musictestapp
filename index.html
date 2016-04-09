@@ -2,26 +2,39 @@
 <html>
     <head>
         <meta charset="utf=8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">           
+        <meta name="viewport" content="width=device-width,
+            maximum-scale=1,
+            minimum-scale=1,
+            initial-scale=1,
+            user-scalable=no"
+        >
         <title>Test Music App</title>
         <link rel="stylesheet" href="styles.css">
+        <script src="js/prefixfree.js"></script>        
     </head>
     <body>
-        <center>
+        <div id="mobileHolder">
             <div id="content">
-                GitHub Name: <input id="gitname">
-                <button id="btn">Get Playlist</button>
-                <br/><br/>
-                Current Playlist: <select id="chooser">
+                <h3 id="appTitle"><span id="menuButton">&equiv;</span>Git Yr Music!</h3>
+                   &nbsp;GitHub Friend&nbsp;<input id="gitname" type="text">
+                        <button id="btn">Get Friend's Playlist</button>
+                    <br/><br/>
+                      &nbsp;Current Playlist&nbsp;<select id="chooser"><div id="shuffleIcon">testing</div>
                     <option>Select A Playist</option>
                 </select>
                 <br/>
                 <div id="playlistHolder">
-                    <select id="playlist"  placeholder="Choose a Song">
-                        <option>Choose Song</option>
+                    <select id="playlist">
+                        <option>Choose a Song</option>
                     </select>
-                </div>
-            </div>
-        </center>
+                </div><!-- end of playlistHolder -->
+                <audio id="audioPlayer" controls autoplay></audio>
+                <div id="currentlyPlaying">( Currently Playing )</div>
+            </div><!-- end of content -->
+        </div><!-- end mobileHolder-->
+        
+    <!--NO HTML BELOW THIS POINT-->
     <script src="main.js"></script>    
     </body>
 </html>
