@@ -23,6 +23,7 @@ var btn = id("btn");
 var chooser = id("chooser");
 var playlist = id("playlist");
 var audioPlayer = id("audioPlayer");
+var currentlyPlaying = id("currentlyPlaying");
 var propNames = Object.keys;
 
 var playlistHeader = "Choose a Song";
@@ -59,6 +60,7 @@ function initialize(){
 }//===| END of initialize() |=====
 
 var addListsFromBrowser = ()=>{};
+//----------
 var addListsFromServer = ()=>{
     var listGetter = new XMLHttpRequest();
     listGetter.open("GET","lists.json");
@@ -77,6 +79,7 @@ var addListsFromServer = ()=>{
     };
 };
 var storeListsToBrowser = ()=>{};
+//----------
 function configureResizing(){
     resizeAndCenter();
     window.onresize = resizeAndCenter;
@@ -99,6 +102,7 @@ function configureResizing(){
     }
     //-------------
 }
+//----------
 var addPlaylistNamesToBox = ()=>{
     for(var userName in lists){
         addNameToBox(userName);
@@ -108,7 +112,7 @@ var addPlaylistNamesToBox = ()=>{
         */
     }
 };
-
+//----------
 function getNewList(e){
     var enterKey = 13;
     if(e.keyCode && e.keyCode !== enterKey){return;}
@@ -127,7 +131,7 @@ function getNewList(e){
         }
     };
 }    
-
+//----------
 function saveNewList(){
     var newname = gitname.value.toLowerCase().trim();
     if(!lists[newname]){
@@ -138,7 +142,7 @@ function saveNewList(){
     }
     storeListsToBrowser(lists);
 }
-
+//----------
 function addNameToBox(newGitName){
     //make a real array of options from chooser
     var opsArray = [].slice.call(chooser.options, 0);
@@ -155,19 +159,19 @@ function addNameToBox(newGitName){
         gitname.placeholder = newGitName + " playlist saved";
     }
 }
-
+//----------
 function changePlayList(e){
     if(chooser.selectedIndex === 0){
         playlist.innerHTML = "";
-        var topOption = document.createElement("option")
+        var topOption = document.createElement("option");
         topOption.innerHTML = playlistHeader;
         playlist.appendChild(topOption);
         playlist.selectedIndex = 0;
         return;
     }
     var list = chooser.options[chooser.selectedIndex].innerHTML;
+    currentPlayListName = list;    
     currentUrl = "https://" + list + ".github.io"+ "/music/";
-    currentPlayListName = list;
     songsArray = propNames(lists[list]);
     
     playlist.innerHTML = "";
@@ -181,9 +185,10 @@ function changePlayList(e){
         playlist.appendChild(option);
     });
 }
-
+//----------
 function playSong(){
     var i = playlist.selectedIndex;
+    currentlyPlaying.innerHTML = currentPlayListName + ": " + playlist[i].innerHTML;    
     i-=1;
     if(i >= 0){
         var url = currentUrl+songsArray[i]+".mp3";
